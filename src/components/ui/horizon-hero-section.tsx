@@ -8,6 +8,13 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { Menu } from 'lucide-react';
+import { Calendar, Code, FileText, User, Clock } from "lucide-react";
+import RadialOrbitalTimeline from "./radial-orbital-timeline";
+import { HoverSlider, TextStaggerHover } from "./animated-text-slideshow";
+import { AnimatedTechIcons } from "./animated-tech-icons";
+
+
+import { ProfileCard } from './profile-card';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,12 +28,12 @@ export const HorizonHeroSection = () => {
 
   const smoothCameraPos = useRef({ x: 0, y: 30, z: 100 });
   const cameraVelocity = useRef({ x: 0, y: 0, z: 0 });
-  
+
   const [scrollProgress, setScrollProgress] = useState(0);
   const [currentSection, setCurrentSection] = useState(1);
   const [isReady, setIsReady] = useState(false);
   const totalSections = 3;
-  
+
   const threeRefs = useRef<{
     scene: THREE.Scene | null;
     camera: THREE.PerspectiveCamera | null;
@@ -55,7 +62,7 @@ export const HorizonHeroSection = () => {
   useEffect(() => {
     const initThree = () => {
       const { current: refs } = threeRefs;
-      
+
       // Scene setup
       refs.scene = new THREE.Scene();
       refs.scene.fog = new THREE.FogExp2(0x000000, 0.00025);
@@ -103,7 +110,7 @@ export const HorizonHeroSection = () => {
 
       // Start animation
       animate();
-      
+
       // Mark as ready after Three.js is initialized
       setIsReady(true);
     };
@@ -111,7 +118,7 @@ export const HorizonHeroSection = () => {
     const createStarField = () => {
       const { current: refs } = threeRefs;
       const starCount = 5000;
-      
+
       for (let i = 0; i < 3; i++) {
         const geometry = new THREE.BufferGeometry();
         const positions = new Float32Array(starCount * 3);
@@ -137,7 +144,7 @@ export const HorizonHeroSection = () => {
           } else {
             color.setHSL(0.6, 0.5, 0.8);
           }
-          
+
           colors[j * 3] = color.r;
           colors[j * 3 + 1] = color.g;
           colors[j * 3 + 2] = color.b;
@@ -199,7 +206,7 @@ export const HorizonHeroSection = () => {
 
     const createNebula = () => {
       const { current: refs } = threeRefs;
-      
+
       const geometry = new THREE.PlaneGeometry(8000, 4000, 100, 100);
       const material = new THREE.ShaderMaterial({
         uniforms: {
@@ -257,7 +264,7 @@ export const HorizonHeroSection = () => {
 
     const createMountains = () => {
       const { current: refs } = threeRefs;
-      
+
       const layers = [
         { distance: -50, height: 60, color: 0x1a1a2e, opacity: 1 },
         { distance: -100, height: 80, color: 0x16213e, opacity: 0.8 },
@@ -268,15 +275,15 @@ export const HorizonHeroSection = () => {
       layers.forEach((layer, index) => {
         const points = [];
         const segments = 50;
-        
+
         for (let i = 0; i <= segments; i++) {
           const x = (i / segments - 0.5) * 1000;
-          const y = Math.sin(i * 0.1) * layer.height + 
-                   Math.sin(i * 0.05) * layer.height * 0.5 +
-                   Math.random() * layer.height * 0.2 - 100;
+          const y = Math.sin(i * 0.1) * layer.height +
+            Math.sin(i * 0.05) * layer.height * 0.5 +
+            Math.random() * layer.height * 0.2 - 100;
           points.push(new THREE.Vector2(x, y));
         }
-        
+
         points.push(new THREE.Vector2(5000, -300));
         points.push(new THREE.Vector2(-5000, -300));
 
@@ -300,7 +307,7 @@ export const HorizonHeroSection = () => {
 
     const createAtmosphere = () => {
       const { current: refs } = threeRefs;
-      
+
       const geometry = new THREE.SphereGeometry(600, 32, 32);
       const material = new THREE.ShaderMaterial({
         uniforms: {
@@ -343,7 +350,7 @@ export const HorizonHeroSection = () => {
     const animate = () => {
       const { current: refs } = threeRefs;
       refs.animationId = requestAnimationFrame(animate);
-      
+
       const time = Date.now() * 0.001;
 
       // Update stars
@@ -361,16 +368,16 @@ export const HorizonHeroSection = () => {
       // Smooth camera movement with easing
       if (refs.camera && refs.targetCameraX !== undefined && refs.targetCameraY !== undefined && refs.targetCameraZ !== undefined) {
         const smoothingFactor = 0.05; // Lower = smoother but slower
-        
+
         // Calculate smooth position with easing
         smoothCameraPos.current.x += (refs.targetCameraX - smoothCameraPos.current.x) * smoothingFactor;
         smoothCameraPos.current.y += (refs.targetCameraY - smoothCameraPos.current.y) * smoothingFactor;
         smoothCameraPos.current.z += (refs.targetCameraZ - smoothCameraPos.current.z) * smoothingFactor;
-        
+
         // Add subtle floating motion
         const floatX = Math.sin(time * 0.1) * 2;
         const floatY = Math.cos(time * 0.15) * 1;
-        
+
         // Apply final position
         refs.camera.position.x = smoothCameraPos.current.x + floatX;
         refs.camera.position.y = smoothCameraPos.current.y + floatY;
@@ -406,9 +413,69 @@ export const HorizonHeroSection = () => {
     window.addEventListener('resize', handleResize);
 
     // Cleanup
-    return () => {
+  
+  const timelineData = [
+    {
+      id: 1,
+      title: "Planning",
+      date: "Jan 2024",
+      content: "Project planning and requirements gathering phase.",
+      category: "Planning",
+      icon: Calendar,
+      relatedIds: [2],
+      status: "completed" as const,
+      energy: 100,
+    },
+    {
+      id: 2,
+      title: "Design",
+      date: "Feb 2024",
+      content: "UI/UX design and system architecture.",
+      category: "Design",
+      icon: FileText,
+      relatedIds: [1, 3],
+      status: "completed" as const,
+      energy: 90,
+    },
+    {
+      id: 3,
+      title: "Development",
+      date: "Mar 2024",
+      content: "Core features implementation and testing.",
+      category: "Development",
+      icon: Code,
+      relatedIds: [2, 4],
+      status: "in-progress" as const,
+      energy: 60,
+    },
+    {
+      id: 4,
+      title: "Testing",
+      date: "Apr 2024",
+      content: "User testing and bug fixes.",
+      category: "Testing",
+      icon: User,
+      relatedIds: [3, 5],
+      status: "pending" as const,
+      energy: 30,
+    },
+    {
+      id: 5,
+      title: "Release",
+      date: "May 2024",
+      content: "Final deployment and release.",
+      category: "Release",
+      icon: Clock,
+      relatedIds: [4],
+      status: "pending" as const,
+      energy: 10,
+    },
+  ];
+
+  return (
+) => {
       const { current: refs } = threeRefs;
-      
+
       if (refs.animationId) {
         cancelAnimationFrame(refs.animationId);
       }
@@ -449,7 +516,7 @@ export const HorizonHeroSection = () => {
   // GSAP Animations - Run after component is ready
   useEffect(() => {
     if (!isReady) return;
-    
+
     // Set initial states to prevent flash
     gsap.set([menuRef.current, titleRef.current, subtitleRef.current, scrollProgressRef.current], {
       visibility: 'visible'
@@ -501,7 +568,67 @@ export const HorizonHeroSection = () => {
       }, "-=0.5");
     }
 
-    return () => {
+  
+  const timelineData = [
+    {
+      id: 1,
+      title: "Planning",
+      date: "Jan 2024",
+      content: "Project planning and requirements gathering phase.",
+      category: "Planning",
+      icon: Calendar,
+      relatedIds: [2],
+      status: "completed" as const,
+      energy: 100,
+    },
+    {
+      id: 2,
+      title: "Design",
+      date: "Feb 2024",
+      content: "UI/UX design and system architecture.",
+      category: "Design",
+      icon: FileText,
+      relatedIds: [1, 3],
+      status: "completed" as const,
+      energy: 90,
+    },
+    {
+      id: 3,
+      title: "Development",
+      date: "Mar 2024",
+      content: "Core features implementation and testing.",
+      category: "Development",
+      icon: Code,
+      relatedIds: [2, 4],
+      status: "in-progress" as const,
+      energy: 60,
+    },
+    {
+      id: 4,
+      title: "Testing",
+      date: "Apr 2024",
+      content: "User testing and bug fixes.",
+      category: "Testing",
+      icon: User,
+      relatedIds: [3, 5],
+      status: "pending" as const,
+      energy: 30,
+    },
+    {
+      id: 5,
+      title: "Release",
+      date: "May 2024",
+      content: "Final deployment and release.",
+      category: "Release",
+      icon: Clock,
+      relatedIds: [4],
+      status: "pending" as const,
+      energy: 10,
+    },
+  ];
+
+  return (
+) => {
       tl.kill();
     };
   }, [isReady]);
@@ -513,37 +640,41 @@ export const HorizonHeroSection = () => {
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
       const maxScroll = documentHeight - windowHeight;
-      const progress = Math.min(scrollY / maxScroll, 1);
-      
+      let progress = scrollY / maxScroll;
+      if (maxScroll - scrollY < 100) {
+        progress = 1.0;
+      }
+      progress = Math.min(progress, 1);
+
       setScrollProgress(progress);
       const newSectionIndex = Math.min(Math.floor(progress * totalSections), totalSections - 1);
       setCurrentSection(newSectionIndex + 1);
 
       const { current: refs } = threeRefs;
-      
+
       // Define camera positions for each section
       const cameraPositions = [
         { x: 0, y: 30, z: 300 },    // Section 0 - HORIZON
         { x: 0, y: 40, z: -50 },    // Section 1 - COSMOS
         { x: 0, y: 50, z: -700 }    // Section 2 - INFINITY
       ];
-      
+
       const transitions = cameraPositions.length - 1;
       const rawTotalProgress = progress * transitions;
-      
+
       let currentIdx = Math.floor(rawTotalProgress);
       if (currentIdx >= transitions) {
         currentIdx = transitions - 1;
       }
-      
+
       let sectionProgress = rawTotalProgress - currentIdx;
       if (progress === 1) {
         sectionProgress = 1.0;
       }
-      
+
       const currentPos = cameraPositions[currentIdx];
       const nextPos = cameraPositions[currentIdx + 1];
-      
+
       // Set target positions (actual smoothing happens in animate loop)
       refs.targetCameraX = currentPos.x + (nextPos.x - currentPos.x) * sectionProgress;
       refs.targetCameraY = currentPos.y + (nextPos.y - currentPos.y) * sectionProgress;
@@ -552,10 +683,10 @@ export const HorizonHeroSection = () => {
       refs.mountains.forEach((mountain, i) => {
         const speed = 1 + i * 0.9;
         const targetZ = mountain.userData.baseZ + scrollY * speed * 0.5;
-        if(refs.nebula) {
-            refs.nebula.position.z = (targetZ + progress * speed * 0.01) - 100;
+        if (refs.nebula) {
+          refs.nebula.position.z = (targetZ + progress * speed * 0.01) - 100;
         }
-        
+
         // Use the same smoothing approach
         mountain.userData.targetZ = targetZ;
         if (progress > 0.7) {
@@ -565,20 +696,80 @@ export const HorizonHeroSection = () => {
           mountain.position.z = refs.locations[i];
         }
       });
-      if(refs.nebula && refs.mountains[3]) {
-          refs.nebula.position.z = refs.mountains[3].position.z;
+      if (refs.nebula && refs.mountains[3]) {
+        refs.nebula.position.z = refs.mountains[3].position.z;
       }
     };
 
     window.addEventListener('scroll', handleScroll);
     handleScroll(); // Set initial position
-    
-    return () => window.removeEventListener('scroll', handleScroll);
+
+  
+  const timelineData = [
+    {
+      id: 1,
+      title: "Planning",
+      date: "Jan 2024",
+      content: "Project planning and requirements gathering phase.",
+      category: "Planning",
+      icon: Calendar,
+      relatedIds: [2],
+      status: "completed" as const,
+      energy: 100,
+    },
+    {
+      id: 2,
+      title: "Design",
+      date: "Feb 2024",
+      content: "UI/UX design and system architecture.",
+      category: "Design",
+      icon: FileText,
+      relatedIds: [1, 3],
+      status: "completed" as const,
+      energy: 90,
+    },
+    {
+      id: 3,
+      title: "Development",
+      date: "Mar 2024",
+      content: "Core features implementation and testing.",
+      category: "Development",
+      icon: Code,
+      relatedIds: [2, 4],
+      status: "in-progress" as const,
+      energy: 60,
+    },
+    {
+      id: 4,
+      title: "Testing",
+      date: "Apr 2024",
+      content: "User testing and bug fixes.",
+      category: "Testing",
+      icon: User,
+      relatedIds: [3, 5],
+      status: "pending" as const,
+      energy: 30,
+    },
+    {
+      id: 5,
+      title: "Release",
+      date: "May 2024",
+      content: "Final deployment and release.",
+      category: "Release",
+      icon: Clock,
+      relatedIds: [4],
+      status: "pending" as const,
+      energy: 10,
+    },
+  ];
+
+  return (
+) => window.removeEventListener('scroll', handleScroll);
   }, [totalSections]);
 
-  const splitTitle = (text: string) => {
+  const splitTitle = (text: string, colorClass: string = '') => {
     return text.split('').map((char, i) => (
-      <span key={i} className="title-char inline-block">
+      <span key={i} className={`title-char inline-block ${colorClass}`}>
         {char === ' ' ? '\u00A0' : char}
       </span>
     ));
@@ -586,11 +777,11 @@ export const HorizonHeroSection = () => {
 
   const titles: Record<number, string> = {
     0: 'HORIZON',
-    1: 'COSMOS',
+    1: 'EXPERTISE',
     2: 'INFINITY'
   };
-  
-  const subtitles: Record<number, {line1: string, line2: string}> = {
+
+  const subtitles: Record<number, { line1: string, line2: string }> = {
     0: {
       line1: 'Where vision meets reality,',
       line2: 'we shape the future of tomorrow'
@@ -605,10 +796,70 @@ export const HorizonHeroSection = () => {
     }
   };
 
+
+  const timelineData = [
+    {
+      id: 1,
+      title: "Planning",
+      date: "Jan 2024",
+      content: "Project planning and requirements gathering phase.",
+      category: "Planning",
+      icon: Calendar,
+      relatedIds: [2],
+      status: "completed" as const,
+      energy: 100,
+    },
+    {
+      id: 2,
+      title: "Design",
+      date: "Feb 2024",
+      content: "UI/UX design and system architecture.",
+      category: "Design",
+      icon: FileText,
+      relatedIds: [1, 3],
+      status: "completed" as const,
+      energy: 90,
+    },
+    {
+      id: 3,
+      title: "Development",
+      date: "Mar 2024",
+      content: "Core features implementation and testing.",
+      category: "Development",
+      icon: Code,
+      relatedIds: [2, 4],
+      status: "in-progress" as const,
+      energy: 60,
+    },
+    {
+      id: 4,
+      title: "Testing",
+      date: "Apr 2024",
+      content: "User testing and bug fixes.",
+      category: "Testing",
+      icon: User,
+      relatedIds: [3, 5],
+      status: "pending" as const,
+      energy: 30,
+    },
+    {
+      id: 5,
+      title: "Release",
+      date: "May 2024",
+      content: "Final deployment and release.",
+      category: "Release",
+      icon: Clock,
+      relatedIds: [4],
+      status: "pending" as const,
+      energy: 10,
+    },
+  ];
+
   return (
+
     <div ref={containerRef} className="hero-container cosmos-style">
       <canvas ref={canvasRef} className="hero-canvas" />
-      
+
       {/* Side menu */}
       <div ref={menuRef} className="side-menu" style={{ visibility: 'hidden' }}>
         <div className="flex flex-col items-center gap-8 text-white p-6 border-r border-white/10 h-full backdrop-blur-sm bg-black/20">
@@ -621,8 +872,8 @@ export const HorizonHeroSection = () => {
       <div ref={scrollProgressRef} className="scroll-progress" style={{ visibility: 'hidden' }}>
         <div className="scroll-text">SCROLL</div>
         <div className="progress-track">
-          <div 
-            className="progress-fill" 
+          <div
+            className="progress-fill"
             style={{ height: `${scrollProgress * 100}%` }}
           />
         </div>
@@ -633,29 +884,83 @@ export const HorizonHeroSection = () => {
 
       {/* All sections for scrolling */}
       <div className="scroll-sections absolute top-0 left-0 w-full z-10">
-       {[...Array(3)].map((_, i) => (
-            <section key={i} className="content-section">
-              <h1 ref={i === 0 ? titleRef : null} className="hero-title">
-                {splitTitle(titles[i] || 'DEFAULT')}
-              </h1>
-          
-              <div ref={i === 0 ? subtitleRef : null} className="hero-subtitle cosmos-subtitle">
-                <p className="subtitle-line">
-                  {i === 2 ? (
-                    <>
-                      In the <span className={`transition-all duration-700 ${scrollProgress > 0.98 ? 'text-red-500 font-medium drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]' : ''}`}>space between thought</span> and creation,
-                    </>
-                  ) : subtitles[i].line1}
-                </p>
-                <p className="subtitle-line">
-                  {i === 2 ? (
-                    <>
-                      we find the <span className={`transition-all duration-700 ${scrollProgress > 0.98 ? 'text-red-500 font-medium drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]' : ''}`}>essence of true innovation</span>
-                    </>
-                  ) : subtitles[i].line2}
-                </p>
+        {[...Array(3)].map((_, i) => (
+          <section key={i} className={`content-section ${i === 0 ? "flex-row max-w-[90rem] mx-auto w-full px-6 md:px-12 lg:px-24" : ""}`}>
+            {i === 0 ? (
+              <div className="flex w-full items-center justify-between">
+                <div className="flex flex-col items-start text-left max-w-2xl z-10 pl-12">
+                  <h1 ref={titleRef} className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 flex flex-wrap items-center">
+                    <div className="flex mr-4">
+                      {splitTitle("Hi,", "text-red-500 drop-shadow-[0_0_15px_rgba(239,68,68,0.8)]")}
+                    </div>
+                    <div className="flex">
+                      {splitTitle("I am", "text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]")}
+                    </div>
+                    <div className="flex w-full mt-2 md:mt-4">
+                      {splitTitle("Abubakar Siddique", "text-red-500 drop-shadow-[0_0_15px_rgba(239,68,68,0.8)]")}
+                    </div>
+                  </h1>
+                  <div ref={subtitleRef} className="text-lg md:text-xl font-light tracking-wide text-white/90">
+                    <p className="subtitle-line mb-3">I create; solve problems engineering them.</p>
+                    <p className="subtitle-line text-white/60">Therefore, always learning.</p>
+                  </div>
+                </div>
+                <div className="hidden lg:block z-10 w-[400px]">
+                  <ProfileCard />
+                </div>
               </div>
-            </section>
+            ) : i === 1 ? (
+              <div className="flex flex-col md:flex-row items-center justify-between w-full h-full max-w-[90rem] mx-auto px-6 md:px-12 lg:px-24">
+                <div className="w-full md:w-5/12 flex flex-col justify-center items-start z-10 space-y-6">
+                  <h1 className="hero-title text-5xl md:text-6xl mb-4 whitespace-nowrap">
+                    {splitTitle("EXPERTISE")}
+                  </h1>
+                  <HoverSlider className="flex flex-col space-y-4 ml-2">
+                    {[
+                      "Backend Development",
+                      "Frontend Development",
+                      "AI Agents Workflows",
+                      "Integrations"
+                    ].map((title, index) => (
+                      <TextStaggerHover
+                        key={title}
+                        index={index}
+                        className="text-2xl md:text-3xl lg:text-4xl font-bold uppercase tracking-tighter whitespace-nowrap"
+                        text={title}
+                      />
+                    ))}
+                    <AnimatedTechIcons />
+                  </HoverSlider>
+                </div>
+                <div className="w-full md:w-7/12 h-full min-h-[500px] z-10 flex items-center justify-center lg:ml-12">
+                  <RadialOrbitalTimeline timelineData={timelineData} />
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col justify-center items-center w-full">
+                <h1 className="hero-title">
+                  {splitTitle(titles[i] || "DEFAULT")}
+                </h1>
+
+                <div className="hero-subtitle cosmos-subtitle">
+                  <p className="subtitle-line">
+                    {i === 2 ? (
+                      <>
+                        In the <span className={`transition-all duration-700 ${scrollProgress > 0.95 ? "text-red-500 font-medium drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]" : ""}`}>space between thought</span> and creation,
+                      </>
+                    ) : subtitles[i].line1}
+                  </p>
+                  <p className="subtitle-line">
+                    {i === 2 ? (
+                      <>
+                        we find the <span className={`transition-all duration-700 ${scrollProgress > 0.95 ? "text-red-500 font-medium drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]" : ""}`}>essence of true innovation</span>
+                      </>
+                    ) : subtitles[i].line2}
+                  </p>
+                </div>
+              </div>
+            )}
+          </section>
         ))}
       </div>
     </div>
