@@ -224,3 +224,33 @@ body {
 .opacity-50 {
   opacity: 0.5;
 }
+
+/* Global Red Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  display: block;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #dc2626; /* Red-600 */
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  background-clip: padding-box;
+  min-height: 40px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ef4444; /* Red-500 */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: #dc2626 rgba(255, 255, 255, 0.05);
+}

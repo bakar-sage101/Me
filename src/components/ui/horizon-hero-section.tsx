@@ -4,14 +4,19 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { motion } from "framer-motion";
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { Menu } from 'lucide-react';
+import { FaGithub, FaLinkedin, FaInstagram } from "react-icons/fa6";
 import { Calendar, Code, FileText, User, Clock } from "lucide-react";
 import RadialOrbitalTimeline from "./radial-orbital-timeline";
 import { HoverSlider, TextStaggerHover } from "./animated-text-slideshow";
 import { AnimatedTechIcons } from "./animated-tech-icons";
+import { ProjectsShowcase } from "./image-showcase";
+import { AnimatedTabs } from "./animated-tabs";
+import Dock from "./dock";
 
 
 import { ProfileCard } from './profile-card';
@@ -33,6 +38,12 @@ export const HorizonHeroSection = () => {
   const [currentSection, setCurrentSection] = useState(1);
   const [isReady, setIsReady] = useState(false);
   const totalSections = 3;
+
+  const dockItems = [
+    { icon: FaGithub, label: "Github", href: "https://github.com" },
+    { icon: FaLinkedin, label: "Linkedin", href: "https://linkedin.com" },
+    { icon: FaInstagram, label: "Instagram", href: "https://instagram.com" },
+  ];
 
   const threeRefs = useRef<{
     scene: THREE.Scene | null;
@@ -412,96 +423,36 @@ export const HorizonHeroSection = () => {
 
     window.addEventListener('resize', handleResize);
 
-    // Cleanup
-  
-  const timelineData = [
-    {
-      id: 1,
-      title: "Planning",
-      date: "Jan 2024",
-      content: "Project planning and requirements gathering phase.",
-      category: "Planning",
-      icon: Calendar,
-      relatedIds: [2],
-      status: "completed" as const,
-      energy: 100,
-    },
-    {
-      id: 2,
-      title: "Design",
-      date: "Feb 2024",
-      content: "UI/UX design and system architecture.",
-      category: "Design",
-      icon: FileText,
-      relatedIds: [1, 3],
-      status: "completed" as const,
-      energy: 90,
-    },
-    {
-      id: 3,
-      title: "Development",
-      date: "Mar 2024",
-      content: "Core features implementation and testing.",
-      category: "Development",
-      icon: Code,
-      relatedIds: [2, 4],
-      status: "in-progress" as const,
-      energy: 60,
-    },
-    {
-      id: 4,
-      title: "Testing",
-      date: "Apr 2024",
-      content: "User testing and bug fixes.",
-      category: "Testing",
-      icon: User,
-      relatedIds: [3, 5],
-      status: "pending" as const,
-      energy: 30,
-    },
-    {
-      id: 5,
-      title: "Release",
-      date: "May 2024",
-      content: "Final deployment and release.",
-      category: "Release",
-      icon: Clock,
-      relatedIds: [4],
-      status: "pending" as const,
-      energy: 10,
-    },
-  ];
+      // Cleanup
+      return () => {
+        const { current: refs } = threeRefs;
 
-  return (
-) => {
-      const { current: refs } = threeRefs;
+        if (refs.animationId) {
+          cancelAnimationFrame(refs.animationId);
+        }
 
-      if (refs.animationId) {
-        cancelAnimationFrame(refs.animationId);
-      }
+        window.removeEventListener('resize', handleResize);
 
-      window.removeEventListener('resize', handleResize);
+        // Dispose Three.js resources
+        refs.stars.forEach(starField => {
+          starField.geometry.dispose();
+          (starField.material as THREE.Material).dispose();
+        });
 
-      // Dispose Three.js resources
-      refs.stars.forEach(starField => {
-        starField.geometry.dispose();
-        (starField.material as THREE.Material).dispose();
-      });
+        refs.mountains.forEach(mountain => {
+          mountain.geometry.dispose();
+          (mountain.material as THREE.Material).dispose();
+        });
 
-      refs.mountains.forEach(mountain => {
-        mountain.geometry.dispose();
-        (mountain.material as THREE.Material).dispose();
-      });
+        if (refs.nebula) {
+          refs.nebula.geometry.dispose();
+          (refs.nebula.material as THREE.Material).dispose();
+        }
 
-      if (refs.nebula) {
-        refs.nebula.geometry.dispose();
-        (refs.nebula.material as THREE.Material).dispose();
-      }
-
-      if (refs.renderer) {
-        refs.renderer.dispose();
-      }
-    };
+        if (refs.renderer) {
+          refs.renderer.dispose();
+        }
+      };
   }, []);
 
   const getLocation = () => {
@@ -568,69 +519,9 @@ export const HorizonHeroSection = () => {
       }, "-=0.5");
     }
 
-  
-  const timelineData = [
-    {
-      id: 1,
-      title: "Planning",
-      date: "Jan 2024",
-      content: "Project planning and requirements gathering phase.",
-      category: "Planning",
-      icon: Calendar,
-      relatedIds: [2],
-      status: "completed" as const,
-      energy: 100,
-    },
-    {
-      id: 2,
-      title: "Design",
-      date: "Feb 2024",
-      content: "UI/UX design and system architecture.",
-      category: "Design",
-      icon: FileText,
-      relatedIds: [1, 3],
-      status: "completed" as const,
-      energy: 90,
-    },
-    {
-      id: 3,
-      title: "Development",
-      date: "Mar 2024",
-      content: "Core features implementation and testing.",
-      category: "Development",
-      icon: Code,
-      relatedIds: [2, 4],
-      status: "in-progress" as const,
-      energy: 60,
-    },
-    {
-      id: 4,
-      title: "Testing",
-      date: "Apr 2024",
-      content: "User testing and bug fixes.",
-      category: "Testing",
-      icon: User,
-      relatedIds: [3, 5],
-      status: "pending" as const,
-      energy: 30,
-    },
-    {
-      id: 5,
-      title: "Release",
-      date: "May 2024",
-      content: "Final deployment and release.",
-      category: "Release",
-      icon: Clock,
-      relatedIds: [4],
-      status: "pending" as const,
-      energy: 10,
-    },
-  ];
-
-  return (
-) => {
-      tl.kill();
-    };
+      return () => {
+        tl.kill();
+      };
   }, [isReady]);
 
   // Scroll handling
@@ -704,67 +595,7 @@ export const HorizonHeroSection = () => {
     window.addEventListener('scroll', handleScroll);
     handleScroll(); // Set initial position
 
-  
-  const timelineData = [
-    {
-      id: 1,
-      title: "Planning",
-      date: "Jan 2024",
-      content: "Project planning and requirements gathering phase.",
-      category: "Planning",
-      icon: Calendar,
-      relatedIds: [2],
-      status: "completed" as const,
-      energy: 100,
-    },
-    {
-      id: 2,
-      title: "Design",
-      date: "Feb 2024",
-      content: "UI/UX design and system architecture.",
-      category: "Design",
-      icon: FileText,
-      relatedIds: [1, 3],
-      status: "completed" as const,
-      energy: 90,
-    },
-    {
-      id: 3,
-      title: "Development",
-      date: "Mar 2024",
-      content: "Core features implementation and testing.",
-      category: "Development",
-      icon: Code,
-      relatedIds: [2, 4],
-      status: "in-progress" as const,
-      energy: 60,
-    },
-    {
-      id: 4,
-      title: "Testing",
-      date: "Apr 2024",
-      content: "User testing and bug fixes.",
-      category: "Testing",
-      icon: User,
-      relatedIds: [3, 5],
-      status: "pending" as const,
-      energy: 30,
-    },
-    {
-      id: 5,
-      title: "Release",
-      date: "May 2024",
-      content: "Final deployment and release.",
-      category: "Release",
-      icon: Clock,
-      relatedIds: [4],
-      status: "pending" as const,
-      energy: 10,
-    },
-  ];
-
-  return (
-) => window.removeEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
   }, [totalSections]);
 
   const splitTitle = (text: string, colorClass: string = '') => {
@@ -855,6 +686,113 @@ export const HorizonHeroSection = () => {
     },
   ];
 
+  const companyTabs = [
+    {
+      id: "kalpay",
+      label: "KalPay",
+      content: (
+        <div className="flex flex-col gap-y-6">
+          <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
+            <div className="relative group shrink-0">
+              <div className="absolute -inset-2 bg-red-600/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <img
+                src="/projects/Kalpay logo.png"
+                alt="KalPay"
+                className="relative rounded-xl w-32 h-32 object-contain bg-white/5 p-4 border border-white/10 shadow-2xl"
+              />
+            </div>
+            <div className="flex flex-col gap-y-1">
+              <div className="flex items-center gap-3">
+                <div className="h-px w-6 bg-red-600" />
+                <span className="text-red-500 font-bold tracking-widest text-[10px] uppercase">Currently</span>
+              </div>
+              <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Junior Full Stack Engineer</h2>
+              <p className="text-white font-bold text-sm"><span className="text-red-600">KalPay</span> Financial Services</p>
+            </div>
+          </div>
+          <div className="space-y-4 text-white text-sm leading-relaxed font-medium">
+            <p className="flex items-start gap-3">
+              <span className="text-red-500 mt-1">➤</span>
+              <span>Focused on Web Development initially was writing services worked with backend using Nest Js (TypeORM, GraphQL). Wrote clean code following the documentation utilising proper object oriented practices.</span>
+            </p>
+            <p className="flex items-start gap-3">
+              <span className="text-red-500 mt-1">➤</span>
+              <span>Increasing my skills towards the full stack, I started learning the frontend using Next Js by resolving the bugs on existing website that was out of MVP phase, and was maturing. Resolved over 90+ bugs in whole app with MVP, and other phases combined resulted in smooth flow for the user.</span>
+            </p>
+            <p className="flex items-start gap-3">
+              <span className="text-red-500 mt-1">➤</span>
+              <span>Integrated third party payment gateways (Stripe, PayFast) enabling fintech workflows.</span>
+            </p>
+            <p className="flex items-start gap-3">
+              <span className="text-red-500 mt-1">➤</span>
+              <span>Developing Legal Tech chat-bot utilizing Lang-graph with RAG. For assisting lawyers in there case studies. Utilizing the vector database in a way to give multi-law firms the data isolation, and security resulting in multi-tenant system.</span>
+            </p>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: "astechware",
+      label: "AsTechware",
+      content: (
+        <div className="flex flex-col gap-y-6">
+          <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
+            <div className="relative group shrink-0">
+              <div className="absolute -inset-2 bg-red-600/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <img
+                src="/projects/ASTechware.png"
+                alt="AsTechware"
+                className="relative rounded-xl w-32 h-32 object-contain bg-white/5 p-4 border border-white/10 shadow-2xl"
+              />
+            </div>
+            <div className="flex flex-col gap-y-1">
+              <div className="flex items-center gap-3">
+                <div className="h-px w-6 bg-white" />
+                <span className="text-white font-bold tracking-widest text-[10px] uppercase">Previously</span>
+              </div>
+              <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Associate Software Engineer</h2>
+              <p className="text-white font-bold text-sm">AsTechware Solutions</p>
+            </div>
+          </div>
+          <div className="space-y-4 text-white text-sm leading-relaxed font-medium">
+            <p className="flex items-start gap-3">
+              <span className="text-red-500 mt-1">➤</span>
+              <span>Designed and implemented RESTful APIs using Node.js and MongoDB for a logistics web application (SWS), including features to manage driver pause/resume states and calculate performance metrics.</span>
+            </p>
+            <p className="flex items-start gap-3">
+              <span className="text-red-500 mt-1">➤</span>
+              <span>Refactored route tracking logic to handle edge cases and fixed critical bugs affecting time calculations for completed routes.</span>
+            </p>
+            <p className="flex items-start gap-3">
+              <span className="text-red-500 mt-1">➤</span>
+              <span>Built a generalized Python-based web scraper using BeautifulSoup and regular expressions to extract legal services from law firm websites, filtering out irrelevant content with NLP-like heuristics.</span>
+            </p>
+            <p className="flex items-start gap-3">
+              <span className="text-red-500 mt-1">➤</span>
+              <span>Enhanced data pipeline robustness and accuracy across 1500+ domains, exporting structured service categories into CSV for downstream ML tasks or analytics.</span>
+            </p>
+            <p className="flex items-start gap-3">
+              <span className="text-red-500 mt-1">➤</span>
+              <span>Voice Assistant Application (Python, OpenAI, ElevenLabs)</span>
+            </p>
+            <p className="flex items-start gap-3 pl-6">
+              <span className="text-red-500 mt-1">•</span>
+              <span>Designed and implemented a real-time, voice-activated assistant using Python, OpenAI’s GPT-3.5-Turbo, and ElevenLabs TTS/STT APIs—integrating webrtcvad and sounddevice to detect user speech and immediately interrupt synthesis for seamless back-and-forth interaction.</span>
+            </p>
+            <p className="flex items-start gap-3 pl-6">
+              <span className="text-red-500 mt-1">•</span>
+              <span>Engineered a multithreaded pipeline that converts speech to text, generates AI responses, and streams MP3-to-WAV TTS with FFmpeg—ensuring sub-second response times and robust noise-resilient voice-activity detection.</span>
+            </p>
+            <p className="flex items-start gap-3 pl-6">
+              <span className="text-red-500 mt-1">•</span>
+              <span>Delivered a polished, user-centric prototype that accelerated conversational workflows, reduced manual input, and demonstrated a 100% success rate in correctly handling user interruptions during playback.</span>
+            </p>
+          </div>
+        </div>
+      )
+    }
+  ];
+
   return (
 
     <div ref={containerRef} className="hero-container cosmos-style">
@@ -904,6 +842,14 @@ export const HorizonHeroSection = () => {
                     <p className="subtitle-line mb-3">I create; solve problems engineering them.</p>
                     <p className="subtitle-line text-white/60">Therefore, always learning.</p>
                   </div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1, duration: 0.8 }}
+                  >
+                    <Dock items={dockItems} />
+                  </motion.div>
                 </div>
                 <div className="hidden lg:block z-10 w-[400px]">
                   <ProfileCard />
@@ -936,27 +882,51 @@ export const HorizonHeroSection = () => {
                   <RadialOrbitalTimeline timelineData={timelineData} />
                 </div>
               </div>
+            ) : i === 2 ? (
+              <div className="flex flex-col lg:flex-row items-center justify-between w-full h-full max-w-[95rem] mx-auto px-6 md:px-12 lg:px-24 gap-12 lg:gap-20">
+                {/* Left Column: Projects */}
+                <div className="w-full lg:w-1/2 flex flex-col justify-center items-start z-10 self-center">
+                  <div className="space-y-4 mb-8">
+                    <h1 className="hero-title text-4xl md:text-5xl lg:text-6xl mb-2 whitespace-nowrap">
+                      {splitTitle("PROJECTS")}
+                    </h1>
+                    <p className="hero-subtitle text-base md:text-lg max-w-lg opacity-80 pl-2 border-l-2 border-red-500 text-left ml-2">
+                      <span className="text-white">My </span>
+                      <span className="text-red-500 font-bold drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]">Problem </span>
+                      <span className="text-white">Solving Journey</span>
+                    </p>
+                  </div>
+                  <div className="w-full">
+                    <ProjectsShowcase />
+                  </div>
+                </div>
+
+                {/* Right Column: Companies */}
+                <div className="w-full lg:w-1/2 flex flex-col justify-center items-start z-10 self-center">
+                  <div className="space-y-4 mb-8 w-full">
+                    <h1 className="hero-title text-4xl md:text-5xl lg:text-6xl mb-2 whitespace-nowrap text-left">
+                      {splitTitle("COMPANIES")}
+                    </h1>
+                    <p className="hero-subtitle text-base md:text-lg max-w-lg opacity-80 pl-2 border-l-2 border-red-500 text-left ml-2">
+                      <span className="text-red-500 font-bold drop-shadow-[0_0_8px_rgba(239,68,68,0.8)] uppercase">I am </span>
+                      <span className="text-white">(currently), or </span>
+                      <span className="text-red-500 font-bold drop-shadow-[0_0_8px_rgba(239,68,68,0.8)] uppercase">worked </span>
+                      <span className="text-white">for</span>
+                    </p>
+                  </div>
+                  <div className="w-full">
+                    <AnimatedTabs tabs={companyTabs} />
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className="flex flex-col justify-center items-center w-full">
                 <h1 className="hero-title">
                   {splitTitle(titles[i] || "DEFAULT")}
                 </h1>
-
                 <div className="hero-subtitle cosmos-subtitle">
-                  <p className="subtitle-line">
-                    {i === 2 ? (
-                      <>
-                        In the <span className={`transition-all duration-700 ${scrollProgress > 0.95 ? "text-red-500 font-medium drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]" : ""}`}>space between thought</span> and creation,
-                      </>
-                    ) : subtitles[i].line1}
-                  </p>
-                  <p className="subtitle-line">
-                    {i === 2 ? (
-                      <>
-                        we find the <span className={`transition-all duration-700 ${scrollProgress > 0.95 ? "text-red-500 font-medium drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]" : ""}`}>essence of true innovation</span>
-                      </>
-                    ) : subtitles[i].line2}
-                  </p>
+                  <p className="subtitle-line">{subtitles[i].line1}</p>
+                  <p className="subtitle-line">{subtitles[i].line2}</p>
                 </div>
               </div>
             )}

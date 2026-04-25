@@ -72,7 +72,7 @@ export function AnimatedTechIcons({ className }: { className?: string }) {
   const currentIcons = techGroups[activeSlide as keyof typeof techGroups] || techGroups[0];
 
   return (
-    <div className={cn("w-full relative min-h-[160px] flex items-start mt-6 pt-8 border-t border-white/10", className)}>
+    <div className={cn("w-full relative h-[220px] flex items-start mt-6 pt-8 border-t border-white/10", className)}>
       <AnimatePresence mode="wait">
         <motion.div
           key={activeSlide}
